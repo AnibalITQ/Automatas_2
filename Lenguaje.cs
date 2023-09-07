@@ -389,7 +389,7 @@ namespace Sintaxis_2
             match("(");
             if (ejecuta)
             {
-                Console.Write(getContenido());
+                Console.Write(getContenido().Replace("\\n","\n").Replace("\\t","\t").Replace("\"",""));
             }
             match(Tipos.Cadena);
             if (getContenido() == ",")
