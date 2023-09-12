@@ -221,36 +221,44 @@ namespace Sintaxis_2
                 if (getContenido() == "++")
                 {
                     match("++");
+                    if (ejecuta){
+                        float valor = getValor(variable);
+                        valor++;
+                        Modifica(variable, valor);
+                    }
                 }
                 else
                 {
                     match("--");
+                     if (ejecuta){
+                        float valor = getValor(variable);
+                        valor--;
+                        Modifica(variable, valor);
+                    }
                 }
             }
             else if (getClasificacion() == Tipos.IncrementoFactor)
             {
+            string operador = getContenido();
+            match(operador);
+            Expresion();
+             float valor = getValor(variable); 
+             float result = stack.Pop();
+             if (ejecuta){
+                   if (operador == "+=")
+                    valor+=result;
+                else if (operador == "-=")
+                    valor-=result;
+                else if (operador == "*=")
+                    valor*=result;
+                else if (operador == "/=")
+                    valor/=result;
+                else if (operador == "%=")
+                    valor%=result;
 
-                if (getContenido() == "+=")
-                {
-                    match("+=");
-                }
-                else if (getContenido() == "-=")
-                {
-                    match("-=");
-                }
-                else if (getContenido() == "*=")
-                {
-                    match("*=");
-                }
-                else if (getContenido() == "/=")
-                {
-                    match("/=");
-                }
-                else if (getContenido() == "%=")
-                {
-                    match("%=");
-                }
-                Expresion();
+                Modifica(variable,valor);
+             }
+                
             }
             float resultado = stack.Pop();
             log.WriteLine(" = " + resultado);
