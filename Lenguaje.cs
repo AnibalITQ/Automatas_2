@@ -180,7 +180,7 @@ namespace Sintaxis_2
             {
                 Scanf(ejecuta);
             }
-             else if (getContenido() == "if")
+            else if (getContenido() == "if")
             {
                 If(ejecuta);
             }
@@ -204,6 +204,7 @@ namespace Sintaxis_2
         //Asignacion -> identificador = Expresion;
         private void Asignacion(bool ejecuta)
         {
+            float result = 0;
             if (!Existe(getContenido()))
             {
                 throw new Error("de sintaxis, la variable <" + getContenido() + "> no está declarada", log, linea, columna);
@@ -215,56 +216,75 @@ namespace Sintaxis_2
             {
                 match("=");
                 Expresion();
+
             }
             else if (getClasificacion() == Tipos.IncrementoTermino)
             {
                 if (getContenido() == "++")
                 {
                     match("++");
-                    if (ejecuta){
+                    if (ejecuta)
+                    {
                         float valor = getValor(variable);
                         valor++;
                         Modifica(variable, valor);
                     }
                 }
-                else
+                else if (getContenido() == "--")
                 {
                     match("--");
-                     if (ejecuta){
+                    if (ejecuta)
+                    {
                         float valor = getValor(variable);
                         valor--;
                         Modifica(variable, valor);
                     }
                 }
+                else if (getContenido() == "+=")
+                {
+                    match("+=");
+                    Expresion();
+                    float valor = getValor(variable);
+                    result = stack.Pop();
+                    valor += result;
+                    Modifica(variable, valor);
+                }
+                else if (getContenido() == "-=")
+                {
+                    match("-=");
+                    Expresion();
+                    float valor = getValor(variable);
+                    result = stack.Pop();
+                    valor -= result;
+                    Modifica(variable, valor);
+                }
             }
             else if (getClasificacion() == Tipos.IncrementoFactor)
             {
-            string operador = getContenido();
-            match(operador);
-            Expresion();
-             float valor = getValor(variable); 
-             float result = stack.Pop();
-             if (ejecuta){
-                   if (operador == "+=")
-                    valor+=result;
-                else if (operador == "-=")
-                    valor-=result;
-                else if (operador == "*=")
-                    valor*=result;
-                else if (operador == "/=")
-                    valor/=result;
-                else if (operador == "%=")
-                    valor%=result;
+                string operador = getContenido();
+                match(operador);
+                Expresion();
+                float valor = getValor(variable);
+                if (ejecuta)
+                {
+                    result = stack.Pop();
+                    if (operador == "*=")
+                        valor *= result;
+                    else if (operador == "/=")
+                        valor /= result;
+                    else if (operador == "%=")
+                        valor %= result;
 
-                Modifica(variable,valor);
-             }
-                
+                    Modifica(variable, valor);
+                }
+
             }
             float resultado = stack.Pop();
             log.WriteLine(" = " + resultado);
             if (ejecuta)
             {
-                Modifica(variable,resultado);
+                stack.Push(resultado);
+                Modifica(variable, resultado);
             }
             match(";");
         }
@@ -351,17 +371,17 @@ namespace Sintaxis_2
 
             switch (operador)
             {
-                case "==" : return R2==R1;
-                case ">"  : return R2>R1;
-                case ">=" : return R2>=R1;
-                case "<"  : return R2<R1;
-                case "<=" : return R2<=R1;
-                default   : return R2!=R1;
+                case "==": return R2 == R1;
+                case ">": return R2 > R1;
+                case ">=": return R2 >= R1;
+                case "<": return R2 < R1;
+                case "<=": return R2 <= R1;
+                default: return R2 != R1;
             }
         }
         //If -> if (Condicion) BloqueInstrucciones | Instruccion (else BloqueInstrucciones | Instruccion)?
         private void If(bool ejecuta)
-        {   
+        {
             match("if");
             match("(");
             bool evaluacion = Condicion() && ejecuta;
@@ -378,16 +398,17 @@ namespace Sintaxis_2
             if (getContenido() == "else" && ejecuta)
             {
                 match("else");
-            if(ejecuta){
+                if (ejecuta)
+                {
                     if (getContenido() == "{")
-                {
-                    BloqueInstrucciones(!evaluacion);
+                    {
+                        BloqueInstrucciones(!evaluacion);
+                    }
+                    else
+                    {
+                        Instruccion(!evaluacion);
+                    }
                 }
-                else
-                {
-                    Instruccion(!evaluacion);
-                } 
-            }
             }
         }
         //Printf -> printf(cadena(,Identificador)?);
@@ -397,7 +418,7 @@ namespace Sintaxis_2
             match("(");
             if (ejecuta)
             {
-                Console.Write(getContenido().Replace("\\n","\n").Replace("\\t","\t").Replace("\"",""));
+                Console.Write(getContenido().Replace("\\n", "\n").Replace("\\t", "\t").Replace("\"", ""));
             }
             match(Tipos.Cadena);
             if (getContenido() == ",")
@@ -406,6 +427,10 @@ namespace Sintaxis_2
                 if (!Existe(getContenido()))
                 {
                     throw new Error("de sintaxis, la variable <" + getContenido() + "> no está declarada", log, linea, columna);
+                }
+                if (ejecuta)
+                {
+                    Console.Write(getValor(getContenido()));
                 }
                 match(Tipos.Identificador);
             }
@@ -430,7 +455,8 @@ namespace Sintaxis_2
             {
                 string captura = "" + Console.ReadLine();
                 float resultado = float.Parse(captura);
-                Modifica(variable,resultado);
+                stack.Push(float.Parse(captura));
+                Modifica(variable, resultado);
             }
             match(")");
             match(";");
@@ -462,9 +488,9 @@ namespace Sintaxis_2
                 float R2 = stack.Pop();
                 float R1 = stack.Pop();
                 if (operador == "+")
-                    stack.Push(R1+R2);
+                    stack.Push(R1 + R2);
                 else
-                    stack.Push(R1-R2);
+                    stack.Push(R1 - R2);
             }
         }
         //Termino -> Factor PorFactor
@@ -485,11 +511,12 @@ namespace Sintaxis_2
                 float R2 = stack.Pop();
                 float R1 = stack.Pop();
                 if (operador == "*")
-                    stack.Push(R1*R2);
+                    stack.Push(R1 * R2);
                 else if (operador == "%")  // Agrega el operador '%' aquí
-                     stack.Push(R1%R2);
+                    stack.Push(R1 % R2);
                 else
-                    stack.Push(R1/R2);
+                    stack.Push(R1 / R2);
+
             }
         }
         //Factor -> numero | identificador | (Expresion)
@@ -507,6 +534,7 @@ namespace Sintaxis_2
                 {
                     throw new Error("de sintaxis, la variable <" + getContenido() + "> no está declarada", log, linea, columna);
                 }
+                stack.Push(getValor(getContenido()));
                 match(Tipos.Identificador);
             }
             else
