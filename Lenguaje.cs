@@ -395,7 +395,7 @@ namespace Sintaxis_2
             {
                 Instruccion(evaluacion);
             }
-            if (getContenido() == "else" && ejecuta)
+            if (getContenido() == "else")
             {
                 match("else");
                 if (ejecuta)
