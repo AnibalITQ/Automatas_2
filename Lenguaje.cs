@@ -360,7 +360,6 @@ namespace Sintaxis_2
             }
         }
         //If -> if (Condicion) BloqueInstrucciones | Instruccion (else BloqueInstrucciones | Instruccion)?
-        bool memoria=true;
         private void If(bool ejecuta)
         {   
             match("if");
@@ -376,19 +375,20 @@ namespace Sintaxis_2
             {
                 Instruccion(evaluacion);
             }
-            if (getContenido() == "else")
+            if (getContenido() == "else" && ejecuta)
             {
                 match("else");
-                if (getContenido() == "{")
+            if(ejecuta){
+                    if (getContenido() == "{")
                 {
                     BloqueInstrucciones(!evaluacion);
                 }
                 else
                 {
-                    Instruccion(!memoria);
+                    Instruccion(!evaluacion);
                 } 
             }
-            memoria =evaluacion;
+            }
         }
         //Printf -> printf(cadena(,Identificador)?);
         private void Printf(bool ejecuta)
@@ -487,7 +487,7 @@ namespace Sintaxis_2
                 if (operador == "*")
                     stack.Push(R1*R2);
                 else if (operador == "%")  // Agrega el operador '%' aquí
-                     stack.Push(R1 % R2);
+                     stack.Push(R1%R2);
                 else
                     stack.Push(R1/R2);
             }
