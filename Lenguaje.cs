@@ -218,7 +218,7 @@ namespace Sintaxis_2
                 match("=");
                 Expresion();
                 result = stack.Pop();
-                valor=result;
+                valor = result;
             }
             else if (getClasificacion() == Tipos.IncrementoTermino)
             {
@@ -423,7 +423,8 @@ namespace Sintaxis_2
                 }
                 if (ejecuta)
                 {
-                    Console.Write(getValor(getContenido()));
+                    string Variable = getContenido();
+                    Console.Write(getValor(Variable));
                 }
                 match(Tipos.Identificador);
             }
@@ -447,13 +448,20 @@ namespace Sintaxis_2
             if (ejecuta)
             {
                 string captura = "" + Console.ReadLine();
-                float resultado = float.Parse(captura);
-                stack.Push(float.Parse(captura));
-                Modifica(variable, resultado);
+                if (float.TryParse(captura, out float resultado))
+                {
+                    stack.Push(resultado);
+                    Modifica(variable, resultado);
+                }
+                else
+                {
+                    throw new Exception("Se capturó una cadena en lugar de un número en la variable <" + variable + ">");
+                }
             }
             match(")");
             match(";");
         }
+
         //Main -> void main() BloqueInstrucciones
         private void Main(bool ejecuta)
         {
