@@ -216,7 +216,7 @@ namespace Sintaxis_2
             {
                 match("=");
                 Expresion();
-
+                result = stack.Pop();
             }
             else if (getClasificacion() == Tipos.IncrementoTermino)
             {
@@ -244,19 +244,15 @@ namespace Sintaxis_2
                 {
                     match("+=");
                     Expresion();
-                    float valor = getValor(variable);
                     result = stack.Pop();
-                    valor += result;
-                    Modifica(variable, valor);
+                    result=getValor(variable)+result;
                 }
                 else if (getContenido() == "-=")
                 {
                     match("-=");
                     Expresion();
-                    float valor = getValor(variable);
                     result = stack.Pop();
-                    valor -= result;
-                    Modifica(variable, valor);
+                    result=getValor(variable)-result;
                 }
             }
             else if (getClasificacion() == Tipos.IncrementoFactor)
@@ -279,12 +275,11 @@ namespace Sintaxis_2
                 }
 
             }
-            float resultado = stack.Pop();
-            log.WriteLine(" = " + resultado);
+            log.WriteLine(" = " + result);
             if (ejecuta)
             {
-                stack.Push(resultado);
-                Modifica(variable, resultado);
+                stack.Push(result);
+                Modifica(variable, result);
             }
             match(";");
         }
