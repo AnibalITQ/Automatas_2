@@ -212,11 +212,13 @@ namespace Sintaxis_2
             log.Write(getContenido() + " = ");
             string variable = getContenido();
             match(Tipos.Identificador);
+            float valor = getValor(variable);
             if (getContenido() == "=")
             {
                 match("=");
                 Expresion();
                 result = stack.Pop();
+                valor=result;
             }
             else if (getClasificacion() == Tipos.IncrementoTermino)
             {
@@ -225,7 +227,6 @@ namespace Sintaxis_2
                     match("++");
                     if (ejecuta)
                     {
-                        float valor = getValor(variable);
                         valor++;
                         Modifica(variable, valor);
                     }
@@ -235,7 +236,6 @@ namespace Sintaxis_2
                     match("--");
                     if (ejecuta)
                     {
-                        float valor = getValor(variable);
                         valor--;
                         Modifica(variable, valor);
                     }
@@ -245,14 +245,14 @@ namespace Sintaxis_2
                     match("+=");
                     Expresion();
                     result = stack.Pop();
-                    result=getValor(variable)+result;
+                    valor = valor + result;
                 }
                 else if (getContenido() == "-=")
                 {
                     match("-=");
                     Expresion();
                     result = stack.Pop();
-                    result=getValor(variable)-result;
+                    valor = valor - result;
                 }
             }
             else if (getClasificacion() == Tipos.IncrementoFactor)
@@ -260,7 +260,6 @@ namespace Sintaxis_2
                 string operador = getContenido();
                 match(operador);
                 Expresion();
-                float valor = getValor(variable);
                 if (ejecuta)
                 {
                     result = stack.Pop();
@@ -278,8 +277,7 @@ namespace Sintaxis_2
             log.WriteLine(" = " + result);
             if (ejecuta)
             {
-                stack.Push(result);
-                Modifica(variable, result);
+                Modifica(variable, valor);
             }
             match(";");
         }
