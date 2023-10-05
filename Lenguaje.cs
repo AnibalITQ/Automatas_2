@@ -330,17 +330,15 @@ namespace Sintaxis_2
         //While -> while(Condicion) BloqueInstrucciones | Instruccion
         private void While(bool ejecuta)
         {
-
-            match("while");
-            int inicia = caracter;
+             int inicia = caracter;
             int lineaInicio = linea;
-            string variable = getContenido();
-            match("(");
-
-            log.WriteLine("while: " + variable);
 
             do
             {
+                match("while");
+                match("(");
+                string variable = getContenido();
+                log.WriteLine("while: " + variable); 
                 ejecuta = Condicion() && ejecuta;
                 match(")");
                 if (getContenido() == "{")
@@ -367,15 +365,12 @@ namespace Sintaxis_2
         //Do -> do BloqueInstrucciones | Instruccion while(Condicion)
         private void Do(bool ejecuta)
         {
-            match("do");
             int inicia = caracter;
             int lineaInicio = linea;
-            string variable = getContenido();
-
-            log.WriteLine("do while: " + variable);
+           
             do
             {
-                match(")");
+                 match("do");
                 if (getContenido() == "{")
                 {
                     BloqueInstrucciones(ejecuta);
@@ -386,7 +381,9 @@ namespace Sintaxis_2
                 }
                 match("while");
                 match("(");
-                ejecuta = Condicion() && ejecuta; Condicion();
+                string var = getContenido();
+                log.WriteLine("Do while: " + var);
+                ejecuta = Condicion() && ejecuta;
                 match(")");
                 match(";");
                 if (ejecuta)
