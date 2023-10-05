@@ -315,14 +315,20 @@ namespace Sintaxis_2
                 /* Console.WriteLine(variable + " = "+tipoDatoVariable);
                  Console.WriteLine(resultado + " = "+tipoDatoResultado);
                  Console.WriteLine("expresion = "+tipoDatoExpresion); */
-                //Variable.TiposDatos tipoDatoMayor=;
-                if (tipoDatoVariable >= tipoDatoResultado)
+                Variable.TiposDatos tipoDatoMayor;
+                if(tipoDatoExpresion>=tipoDatoResultado){
+                    tipoDatoMayor=tipoDatoExpresion;
+                }
+                else{
+                    tipoDatoMayor=tipoDatoExpresion;
+                }
+                if (tipoDatoVariable >= tipoDatoMayor)
                 {
                     Modifica(variable, resultado);
                 }
                 else
                 {
-                    throw new Error("de semantica, no se puede asignar in <" + tipoDatoResultado + "> a un <" + tipoDatoVariable + ">", log, linea, columna);
+                    throw new Error("de semantica, no se puede asignar in <" + tipoDatoMayor + "> a un <" + tipoDatoVariable + ">", log, linea, columna);
                 }
             }
             match(";");
@@ -330,7 +336,7 @@ namespace Sintaxis_2
         //While -> while(Condicion) BloqueInstrucciones | Instruccion
         private void While(bool ejecuta)
         {
-             int inicia = caracter;
+            int inicia = caracter;
             int lineaInicio = linea;
 
             do
@@ -338,7 +344,7 @@ namespace Sintaxis_2
                 match("while");
                 match("(");
                 string variable = getContenido();
-                log.WriteLine("while: " + variable); 
+                log.WriteLine("while: " + variable);
                 ejecuta = Condicion() && ejecuta;
                 match(")");
                 if (getContenido() == "{")
@@ -367,10 +373,10 @@ namespace Sintaxis_2
         {
             int inicia = caracter;
             int lineaInicio = linea;
-           
+
             do
             {
-                 match("do");
+                match("do");
                 if (getContenido() == "{")
                 {
                     BloqueInstrucciones(ejecuta);
@@ -429,16 +435,26 @@ namespace Sintaxis_2
                 }
                 if (ejecuta)
                 {
-                    tipoDatoVariable = getTipo(variable);
-                    tipoDatoResultado = getTipo(resultado);
-                    if (tipoDatoVariable >= tipoDatoResultado)
-                    {
-                        Modifica(variable, resultado);
-                    }
-                    else
-                    {
-                        throw new Error("de semantica, no se puede asignar in <" + tipoDatoResultado + "> a un <" + tipoDatoVariable + ">", log, linea, columna);
-                    }
+                tipoDatoVariable = getTipo(variable);
+                tipoDatoResultado = getTipo(resultado);
+                /* Console.WriteLine(variable + " = "+tipoDatoVariable);
+                 Console.WriteLine(resultado + " = "+tipoDatoResultado);
+                 Console.WriteLine("expresion = "+tipoDatoExpresion); */
+                Variable.TiposDatos tipoDatoMayor;
+                if(tipoDatoExpresion>=tipoDatoResultado){
+                    tipoDatoMayor=tipoDatoExpresion;
+                }
+                else{
+                    tipoDatoMayor=tipoDatoExpresion;
+                }
+                if (tipoDatoVariable >= tipoDatoMayor)
+                {
+                    Modifica(variable, resultado);
+                }
+                else
+                {
+                    throw new Error("de semantica, no se puede asignar in <" + tipoDatoMayor + "> a un <" + tipoDatoVariable + ">", log, linea, columna);
+                }
                     archivo.DiscardBufferedData();
                     caracter = inicia - variable.Length - 1;
                     archivo.BaseStream.Seek(caracter, SeekOrigin.Begin);
