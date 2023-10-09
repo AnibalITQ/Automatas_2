@@ -62,9 +62,12 @@ namespace Sintaxis_2
             log.WriteLine("-----------------");
             log.WriteLine("V a r i a b l e s");
             log.WriteLine("-----------------");
+            asm.WriteLine(";V a r i a b l e s" );
             foreach (Variable v in lista)
             {
                 log.WriteLine(v.getNombre() + " " + v.getTiposDatos() + " = " + v.getValor());
+                asm.WriteLine(v.getNombre()+"dw 0h");
+
             }
             log.WriteLine("-----------------");
         }
