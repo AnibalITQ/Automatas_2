@@ -45,6 +45,7 @@ namespace Sintaxis_2
         //Programa  -> Librerias? Variables? Main
         public void Programa()
         {
+            asm.WriteLine("org 100h");
             if (getContenido() == "#")
             {
                 Librerias();
@@ -54,6 +55,7 @@ namespace Sintaxis_2
                 Variables();
             }
             Main(true);
+            asm.WriteLine("RET");
             Imprime();
         }
 
@@ -66,7 +68,7 @@ namespace Sintaxis_2
             foreach (Variable v in lista)
             {
                 log.WriteLine(v.getNombre() + " " + v.getTiposDatos() + " = " + v.getValor());
-                asm.WriteLine(v.getNombre()+"dw 0h");
+                asm.WriteLine(v.getNombre()+" dw 0h");
 
             }
             log.WriteLine("-----------------");
@@ -260,6 +262,7 @@ namespace Sintaxis_2
                 match("=");
                 Expresion();
                 resultado = stack.Pop();
+                asm.WriteLine("POP AX");
             }
             else if (getClasificacion() == Tipos.IncrementoTermino)
             {
@@ -284,12 +287,14 @@ namespace Sintaxis_2
                     match("+=");
                     Expresion();
                     resultado += stack.Pop();
+                    asm.WriteLine("POP AX");
                 }
                 else if (getContenido() == "-=")
                 {
                     match("-=");
                     Expresion();
                     resultado -= stack.Pop();
+                    asm.WriteLine("POP AX");
                 }
             }
             else if (getClasificacion() == Tipos.IncrementoFactor)
@@ -301,11 +306,14 @@ namespace Sintaxis_2
                 {
 
                     if (operador == "*=")
-                        resultado *= stack.Pop();
+                        {resultado *= stack.Pop();
+                        asm.WriteLine("POP AX");}
                     else if (operador == "/=")
-                        resultado /= stack.Pop();
+                        {resultado /= stack.Pop();
+                        asm.WriteLine("POP AX");}
                     else if (operador == "%=")
-                        resultado %= stack.Pop();
+                        {resultado %= stack.Pop();
+                        asm.WriteLine("POP AX");}
 
                 }
 
@@ -504,7 +512,9 @@ namespace Sintaxis_2
             match(Tipos.OperadorRelacional);
             Expresion();
             float R1 = stack.Pop();
+            asm.WriteLine("POP AX");
             float R2 = stack.Pop();
+            asm.WriteLine("POP BX");
 
             switch (operador)
             {
@@ -640,11 +650,21 @@ namespace Sintaxis_2
                 Termino();
                 log.Write(" " + operador);
                 float R2 = stack.Pop();
+                asm.WriteLine("POP AX");
                 float R1 = stack.Pop();
+                asm.WriteLine("POP BX");
                 if (operador == "+")
+                   { 
                     stack.Push(R1 + R2);
+                    asm.WriteLine("ADD BX,AX");
+                    asm.WriteLine("PUSH BX");
+                    }
                 else
-                    stack.Push(R1 - R2);
+                   {
+                     stack.Push(R1 - R2);
+                     asm.WriteLine("SUB BX,AX");
+                    asm.WriteLine("PUSH BX");
+                   }
             }
         }
         //Termino -> Factor PorFactor
@@ -663,7 +683,9 @@ namespace Sintaxis_2
                 Factor();
                 log.Write(" " + operador);
                 float R2 = stack.Pop();
+                asm.WriteLine("POP AX");
                 float R1 = stack.Pop();
+                asm.WriteLine("POP BX");
                 if (operador == "*")
                     stack.Push(R1 * R2);
                 else if (operador == "%")  // Agrega el operador '%' aquí
@@ -679,7 +701,9 @@ namespace Sintaxis_2
             if (getClasificacion() == Tipos.Numero)
             {
                 log.Write(" " + getContenido());
+                asm.WriteLine("MOV AX, " + getContenido());
                 stack.Push(float.Parse(getContenido()));
+                asm.WriteLine("PUSH AX");
                 if (tipoDatoExpresion < getTipo(float.Parse(getContenido())))
                 {
                     tipoDatoExpresion = getTipo(float.Parse(getContenido()));
